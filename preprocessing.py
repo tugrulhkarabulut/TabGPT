@@ -53,6 +53,7 @@ def parse_arguments():
     parser.add_argument('--input-path', type=str, default='/mnt/e/Data/DadaGP-v1.1')
     parser.add_argument('--output-path', type=str, default='/mnt/e/Data/DadaGP-processed')
     parser.add_argument('--genre', type=str, default='classic_rock')
+    return parser.parse_args()
 
 def main():
     args = parse_arguments()
