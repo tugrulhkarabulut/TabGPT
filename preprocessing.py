@@ -65,7 +65,7 @@ def main():
 
     print(len(train_data), len(val_data))
 
-
+    os.makedirs(args.output_path, exist_ok=True)
     json.dump(train_data, open(os.path.join(args.output_path, 'train_data.json'), 'w'))
     json.dump(val_data, open(os.path.join(args.output_path, 'val_data.json'), 'w'))
 
