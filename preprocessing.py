@@ -17,8 +17,8 @@ def get_metadata(path):
     return data
 
 
-def filter(data, value, by="genre"):
-    return {k: v for k, v in data.items() if f"{by}:{value}" in v["genre_tokens"]}
+def filter(data, value, by="genre", col="genre_tokens"):
+    return {k: v for k, v in data.items() if f"{by}:{value}" in v[col]}
 
 
 def read_tokens(path):
@@ -36,7 +36,7 @@ def add_tokens(data, path):
     return data_new
 
 
-def prepare_dataset_files(data):
+def prepare_train_val(data):
     train_data = []
     val_data = []
 
@@ -60,7 +60,7 @@ def main():
     df_metadata = add_tokens(df_metadata, args.input_path)
     if args.genre is not None:
         df_metadata = filter(df_metadata, args.genre)
-    train_data, val_data = prepare_dataset_files(df_metadata)
+    train_data, val_data = prepare_train_val(df_metadata)
 
     print(len(train_data), len(val_data))
 
