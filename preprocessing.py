@@ -22,9 +22,12 @@ def filter(data, value, by="genre", col="genre_tokens"):
 
 
 def read_tokens(path):
-    with open(path) as f:
-        text = "".join(f.readlines())
-        text = text.replace("\n", " ")
+    try:
+        with open(path) as f:
+            text = "".join(f.readlines())
+            text = text.replace("\n", " ")
+    except:
+        print(path)
 
     return text
 

@@ -1,3 +1,4 @@
 dadaGP
 *.ipynb
 *.txt
+.env
