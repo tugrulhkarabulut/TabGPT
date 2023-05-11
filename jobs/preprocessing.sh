@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p akya
+#SBATCH -p hamsi
 #SBATCH --time=1-00:00:00
 #SBATCH -A tbag130
 #SBATCH -J tabgpt-preprocess
