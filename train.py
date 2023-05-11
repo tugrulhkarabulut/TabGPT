@@ -8,8 +8,16 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 from datasets import load_dataset, Dataset
-from transformers import GPT2TokenizerFast
+from transformers import (
+    GPT2TokenizerFast, 
+    Trainer, 
+    TrainingArguments, 
+    AutoModelForCausalLM, 
+    DataCollatorForLanguageModeling,
+    GPT2LMHeadModel,
+)
 
+from config import get_cfg_defaults
 import utils
 
 
@@ -128,9 +136,6 @@ def tokenize_function(tokenizer, examples):
     return examples
 
 
-
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path", type=str, default="/mnt/e/Data/DadaGP-v1.1")
@@ -138,59 +143,57 @@ def parse_arguments():
         "--output-path", type=str, default="/mnt/e/Data/DadaGP-processed"
     )
     parser.add_argument("--genre", type=str, default="classic_rock")
-    parser.add_argument("--extend-tokenizer", action="store_true")
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
-    df_metadata = get_metadata(args.input_path)
-    if args.genre is not None:
-        df_metadata = filter(df_metadata, args.genre)
-    df_metadata = add_tokens(df_metadata, args.input_path)
-    train_data, val_data = prepare_train_val(df_metadata)
-    all_tokens = json.load(open(os.path.join(args.input_path, "_DadaGP_all_tokens.json")))
+    cfg = get_cfg_defaults()
 
-    os.makedirs(args.output_path, exist_ok=True)
-    json.dump(train_data, open(os.path.join(args.output_path, "train_data.json"), "w"))
-    json.dump(val_data, open(os.path.join(args.output_path, "val_data.json"), "w"))
+    if os.path.exists(args.config):
+        cfg.merge_from_file(args.config)
+    
+    train_dataset = Dataset.load_from_disk(cfg.TRAIN_DATASET)
+    test_dataset = Dataset.load_from_disk(cfg.TEST_DATASET)
 
-    train_dataset, test_dataset = prepare_dataset(args.output_path)
-    if args.extend_tokenizer:
+    all_tokens = json.load(open(os.path.join(cfg.INPUT, "_DadaGP_all_tokens.json")))
+
+    if cfg.DATA.EXTEND_TOKENIZER:
         tokenizer = utils.get_tokenizer(extend=all_tokens)
+        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
+
     else:
         tokenizer = utils.get_tokenizer()
+        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
 
-    train_dataset = train_dataset.map(
-        chunk_map,
-        batched=True,
-        num_proc=4,
-        remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
-    )
-    train_dataset = train_dataset.map(
-        lambda x: tokenize_function(tokenizer, x),
-        batched=True,
-        num_proc=4,
-        remove_columns=["text"],
-    )
-    train_dataset = train_dataset.map(group_texts, batched=True, num_proc=4)
 
-    test_dataset = test_dataset.map(
-        chunk_map,
-        batched=True,
-        num_proc=4,
-        remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
+    training_args = TrainingArguments(
+        output_dir=cfg.OUTPUT,
+        learning_rate=cfg.TRANSFORMER_SOLVER.LR,
+        per_device_train_batch_size=cfg.TRANSFORMER_SOLVER.TRAIN_BATCH_SIZE,
+        per_device_eval_batch_size=cfg.TRANSFORMER_SOLVER.TEST_BATCH_SIZE,
+        gradient_accumulation_steps=cfg.TRANSFORMER_SOLVER.GRAD_ACC_STEPS,
+        gradient_checkpointing=cfg.TRANSFORMER_SOLVER.GRAD_CKPT,
+        num_train_epochs=cfg.TRANSFORMER_SOLVER.EPOCHS,
+        weight_decay=cfg.TRANSFORMER_SOLVER.WEIGHT_DECAY,
+        fp16=cfg.TRANSFORMER_SOLVER.FP16,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
     )
-    test_dataset = test_dataset.map(
-        lambda x: tokenize_function(tokenizer, x),
-        batched=True,
-        num_proc=4,
-        remove_columns=["text"],
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset,
+        tokenizer=tokenizer,
     )
-    test_dataset = test_dataset.map(group_texts, batched=True, num_proc=4)
 
-    train_dataset.save_to_disk(os.path.join(args.output_path, "train_dataset"))
-    test_dataset.save_to_disk(os.path.join(args.output_path, "test_dataset"))
+    if cfg.RESUME_FROM_CKPT:
+        ckpt_path = cfg.CKPT_PATH
+    else:
+        ckpt_path = False
+
+    trainer.train(resume_from_checkpoint=ckpt_path)
 
 
 if __name__ == "__main__":
