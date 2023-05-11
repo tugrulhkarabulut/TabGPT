@@ -1,24 +1,24 @@
-import os
+import argparse
 import ast
 import json
-import argparse
+import os
 from math import ceil
 
-from tqdm import tqdm
 import numpy as np
 import pandas as pd
-from datasets import load_dataset, Dataset
+from datasets import Dataset, load_dataset
+from tqdm import tqdm
 from transformers import (
-    GPT2TokenizerFast, 
-    Trainer, 
-    TrainingArguments, 
-    AutoModelForCausalLM, 
+    AutoModelForCausalLM,
     DataCollatorForLanguageModeling,
     GPT2LMHeadModel,
+    GPT2TokenizerFast,
+    Trainer,
+    TrainingArguments,
 )
 
-from config import get_cfg_defaults
 import utils
+from config import get_cfg_defaults
 
 
 def get_files(path):
@@ -138,11 +138,11 @@ def tokenize_function(tokenizer, examples):
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input-path", type=str, default="/mnt/e/Data/DadaGP-v1.1")
     parser.add_argument(
-        "--output-path", type=str, default="/mnt/e/Data/DadaGP-processed"
+        "--config",
+        type=str,
+        help=".yml config path",
     )
-    parser.add_argument("--genre", type=str, default="classic_rock")
     return parser.parse_args()
 
 
@@ -152,7 +152,7 @@ def main():
 
     if os.path.exists(args.config):
         cfg.merge_from_file(args.config)
-    
+
     train_dataset = Dataset.load_from_disk(cfg.TRAIN_DATASET)
     test_dataset = Dataset.load_from_disk(cfg.TEST_DATASET)
 
@@ -166,19 +166,20 @@ def main():
         tokenizer = utils.get_tokenizer()
         model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
 
-
     training_args = TrainingArguments(
         output_dir=cfg.OUTPUT,
-        learning_rate=cfg.TRANSFORMER_SOLVER.LR,
-        per_device_train_batch_size=cfg.TRANSFORMER_SOLVER.TRAIN_BATCH_SIZE,
-        per_device_eval_batch_size=cfg.TRANSFORMER_SOLVER.TEST_BATCH_SIZE,
-        gradient_accumulation_steps=cfg.TRANSFORMER_SOLVER.GRAD_ACC_STEPS,
-        gradient_checkpointing=cfg.TRANSFORMER_SOLVER.GRAD_CKPT,
-        num_train_epochs=cfg.TRANSFORMER_SOLVER.EPOCHS,
-        weight_decay=cfg.TRANSFORMER_SOLVER.WEIGHT_DECAY,
-        fp16=cfg.TRANSFORMER_SOLVER.FP16,
+        learning_rate=cfg.SOLVER.LR,
+        per_device_train_batch_size=cfg.SOLVER.TRAIN_BATCH_SIZE,
+        per_device_eval_batch_size=cfg.SOLVER.TEST_BATCH_SIZE,
+        gradient_accumulation_steps=cfg.SOLVER.GRAD_ACC_STEPS,
+        gradient_checkpointing=cfg.SOLVER.GRAD_CKPT,
+        num_train_epochs=cfg.SOLVER.EPOCHS,
+        weight_decay=cfg.SOLVER.WEIGHT_DECAY,
+        fp16=cfg.SOLVER.FP16,
         evaluation_strategy="epoch",
-        save_strategy="epoch",
+        save_total_limit=2,
+        save_strategy="no",
+        load_best_model_at_end=False,
     )
     trainer = Trainer(
         model=model,

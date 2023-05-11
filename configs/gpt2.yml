@@ -1,0 +1,19 @@
+INPUT: /mnt/e/Data/DadaGP-processed-classic_rock
+OUTPUT: ./output/
+MODEL: gpt2
+RESUME_FROM_CKPT: False
+CKPT_PATH: /mnt/e/Data/dadagp-models/checkpoint-28760
+DATA:
+  LOAD_DATASET_FROM_DISK: True
+  EXTEND_TOKENIZER: False
+  TRAIN_DATASET: train_dataset
+  TEST_DATASET: test_dataset
+SOLVER:
+  LR: 2e-5
+  TRAIN_BATCH_SIZE: 32
+  TEST_BATCH_SIZE: 32
+  GRAD_ACC_STEPS: 2
+  GRAD_CKPT: True
+  FP16: True
+  EPOCHS: 10
+  WEIGHT_DECAY: 1e-2

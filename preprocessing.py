@@ -128,9 +128,6 @@ def tokenize_function(tokenizer, examples):
     return examples
 
 
-
-
-
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input-path", type=str, default="/mnt/e/Data/DadaGP-v1.1")
@@ -149,7 +146,9 @@ def main():
         df_metadata = filter(df_metadata, args.genre)
     df_metadata = add_tokens(df_metadata, args.input_path)
     train_data, val_data = prepare_train_val(df_metadata)
-    all_tokens = json.load(open(os.path.join(args.input_path, "_DadaGP_all_tokens.json")))
+    all_tokens = json.load(
+        open(os.path.join(args.input_path, "_DadaGP_all_tokens.json"))
+    )
 
     os.makedirs(args.output_path, exist_ok=True)
     json.dump(train_data, open(os.path.join(args.output_path, "train_data.json"), "w"))

@@ -1,5 +1,5 @@
-import os
 import argparse
+import os
 
 from config import get_cfg_defaults
 
