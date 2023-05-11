@@ -96,6 +96,11 @@ def generate_gp(
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--config",
+        type=str,
+        help=".yml config path",
+    )
+    parser.add_argument(
         "--input-path",
         type=str,
         default="/mnt/e/Data/DadaGP-v1.1/B/Beatles (The)/Beatles (The) - Here Comes The Sun (3).gp4.tokens.txt",
@@ -107,6 +112,7 @@ def parse_arguments():
     parser.add_argument("--n-warm-up", type=int, default=128)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--overlap", type=int, default=128)
+    parser.add_argument("--instruments", nargs='+', default=INSTRUMENTS)
     return parser.parse_args()
 
 
@@ -117,19 +123,39 @@ def main():
     if os.path.exists(args.config):
         cfg.merge_from_file(args.config)
 
-    train_dataset = Dataset.load_from_disk(cfg.TRAIN_DATASET)
-    test_dataset = Dataset.load_from_disk(cfg.TEST_DATASET)
-
     all_tokens = json.load(open(os.path.join(cfg.INPUT, "_DadaGP_all_tokens.json")))
+
+    input_piece = utils.read_tokens(args.input_path)
+    warm_up = " ".join(input_piece.split()[: args.n_warm_up])
 
     if cfg.DATA.EXTEND_TOKENIZER:
         tokenizer = utils.get_tokenizer(extend=all_tokens)
-        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
-
     else:
         tokenizer = utils.get_tokenizer()
-        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
-    generate_piece()
+
+    model = GPT2LMHeadModel.from_pretrained(cfg.CKPT_PATH)
+    tab_generator = pipeline(
+        "text-generation",
+        model=model,
+        tokenizer=tokenizer,
+        max_length=1024,
+        device=torch.device(0),
+        bad_words_ids=get_bad_words(
+            tokenizer,
+            all_tokens,
+            instruments=args.instruments,
+        ),
+    )
+
+    generated_text = generate_piece(
+        tab_generator,
+        warm_up,
+        max_length=args.max_length,
+        overlap=args.overlap,
+        all_tokens=all_tokens,
+    )
+
+    generate_gp(generated_text, args.encdec_path, args.output_path, args.output_file)
 
 
 if __name__ == "__main__":

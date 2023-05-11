@@ -26,21 +26,10 @@ def filter(data, value, by="genre", col="genre_tokens"):
     return {k: v for k, v in data.items() if f"{by}:{value}" in v[col]}
 
 
-def read_tokens(path):
-    try:
-        with open(path) as f:
-            text = "".join(f.readlines())
-            text = text.replace("\n", " ")
-    except:
-        print(path)
-
-    return text
-
-
 def add_tokens(data, path):
     data_new = data.copy()
     for key in tqdm(data):
-        data_new[key]["text"] = read_tokens(os.path.join(path, key))
+        data_new[key]["text"] = utils.read_tokens(os.path.join(path, key))
     return data_new
 
 
