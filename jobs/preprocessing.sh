@@ -5,7 +5,7 @@
 #SBATCH -J tabgpt-preprocess
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH --cpus-per-task 10
+#SBATCH --cpus-per-task 4
 #SBATCH -o /truba/home/tkarabulut/htgaa_project/out-%j.out
 #SBATCH -e /truba/home/tkarabulut/htgaa_project/err-%j.err
 
