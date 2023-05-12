@@ -11,6 +11,6 @@
 
 eval "$(conda shell.bash hook)"
 conda activate htgaa
-python preprocessing.py --input-path ../dadaGP-v1.1 \
+python preprocessing.py --input-path ../DaDaGP-v1.1 \
                         --output-path ../DadaGP-processed-classic_rock \
                         --genre classic_rock
