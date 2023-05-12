@@ -6,7 +6,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH --cpus-per-task 4
+#SBATCH --cpus-per-task 10
 #SBATCH -o /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-train-%j.out
 #SBATCH -e /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-train-%j.err
 
