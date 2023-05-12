@@ -153,8 +153,8 @@ def main():
     if os.path.exists(args.config):
         cfg.merge_from_file(args.config)
 
-    train_dataset = Dataset.load_from_disk(cfg.TRAIN_DATASET)
-    test_dataset = Dataset.load_from_disk(cfg.TEST_DATASET)
+    train_dataset = Dataset.load_from_disk(cfg.DATA.TRAIN_DATASET)
+    test_dataset = Dataset.load_from_disk(cfg.DATA.TEST_DATASET)
     print('Loaded train and test datasets')
 
     all_tokens = json.load(open(os.path.join(cfg.INPUT, "_DadaGP_all_tokens.json")))
