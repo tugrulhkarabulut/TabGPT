@@ -1,10 +1,9 @@
 INPUT: /mnt/e/Data/DadaGP-processed-classic_rock
 OUTPUT: ./output/
-MODEL: gpt2_
+MODEL: gpt2
 RESUME_FROM_CKPT: False
-CKPT_PATH: 
+CKPT_PATH:
 DATA:
-  LOAD_DATASET_FROM_DISK: True
   EXTEND_TOKENIZER: False
   TRAIN_DATASET: train_dataset
   TEST_DATASET: test_dataset
