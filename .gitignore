@@ -4,3 +4,4 @@ dadaGP
 *.txt
 .env
 logs
+configs
