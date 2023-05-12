@@ -11,7 +11,6 @@ _C.CKPT_PATH = ""
 _C.DATA = CN()
 _C.DATA.TRAIN_DATASET = "train_dataset"
 _C.DATA.TEST_DATASET = "test_dataset"
-_C.DATA.LOAD_DATASET_FROM_DISK = True
 _C.DATA.EXTEND_TOKENIZER = False
 
 
