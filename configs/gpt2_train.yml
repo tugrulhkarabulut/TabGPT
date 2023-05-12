@@ -1,8 +1,8 @@
 INPUT: /mnt/e/Data/DadaGP-processed-classic_rock
 OUTPUT: ./output/
-MODEL: gpt2
+MODEL: gpt2_
 RESUME_FROM_CKPT: False
-CKPT_PATH: /mnt/e/Data/dadagp-models/checkpoint-28760
+CKPT_PATH: 
 DATA:
   LOAD_DATASET_FROM_DISK: True
   EXTEND_TOKENIZER: False
@@ -15,5 +15,5 @@ SOLVER:
   GRAD_ACC_STEPS: 2
   GRAD_CKPT: True
   FP16: True
-  EPOCHS: 10
+  EPOCHS: 1
   WEIGHT_DECAY: 1e-2
