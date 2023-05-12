@@ -5,6 +5,8 @@ _C = CN()
 _C.INPUT = "./data/"
 _C.OUTPUT = "./output/"
 _C.MODEL = "gpt2"
+_C.RESUME_FROM_CKPT = False
+_C.CKPT_PATH = ""
 
 _C.DATA = CN()
 _C.DATA.TRAIN_DATASET = "train_dataset"

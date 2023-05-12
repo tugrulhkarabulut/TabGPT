@@ -12,5 +12,3 @@
 
 conda activate htgaa
 python train.py --config configs/gpt2_train.yml
-
-
