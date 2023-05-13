@@ -108,7 +108,6 @@ def parse_arguments():
     parser.add_argument("--output-path", type=str, default="./output/")
     parser.add_argument("--output-file", type=str, default="output.gp5")
     parser.add_argument("--encdec-path", type=str, default="./dadaGP/")
-    parser.add_argument("--model-path", type=str)
     parser.add_argument("--n-warm-up", type=int, default=128)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--overlap", type=int, default=128)
