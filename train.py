@@ -135,6 +135,9 @@ def tokenize_function(tokenizer, examples):
     examples["labels"] = examples["input_ids"].copy()
     return examples
 
+def write_config(cfg, cfg_path):
+    with open(os.path.join(cfg.OUTPUT, cfg_path), "w") as f:
+        f.write(cfg.dump())
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -204,7 +207,7 @@ def main():
         ckpt_path = False
 
     trainer.train(resume_from_checkpoint=ckpt_path)
-
+    write_config(cfg, args.config.split('/')[-1])
 
 if __name__ == "__main__":
     main()
