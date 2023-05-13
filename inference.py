@@ -67,7 +67,7 @@ def generate_piece(generator, warm_up_tabs, max_length, overlap, all_tokens):
     generated_tabs = generator(current_input)[0]["generated_text"]
     generated_tabs = postprocess(generated_tabs, all_tokens, append_end=False, sep=" ")
     while len(generated_tabs.split()) < max_length:
-        len(generated_tabs.split())
+        print(len(generated_tabs.split()))
         current_input = " ".join(generated_tabs.split()[-overlap:])
         current_gen = generator(current_input)[0]["generated_text"]
         current_gen = " ".join(current_gen.split()[overlap:])
@@ -111,7 +111,7 @@ def parse_arguments():
     parser.add_argument("--n-warm-up", type=int, default=128)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--overlap", type=int, default=128)
-    parser.add_argument("--instruments", nargs='+', default=INSTRUMENTS)
+    parser.add_argument("--instruments", nargs="+", default=INSTRUMENTS)
     return parser.parse_args()
 
 
