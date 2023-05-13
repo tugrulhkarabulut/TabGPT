@@ -13,7 +13,7 @@
 conda activate htgaa
 python inference.py --config configs/gpt2_train.yml \
                     --input-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-prompts/here_comes_the_sun.txt \
-                    --output-path ./output/ \
+                    --output-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/ \
                     --output-file here_comes_the_sun.gp5 \
                     --encdec-path ./dadaGP/ \
                     --n-warm-up 128 \
@@ -23,7 +23,7 @@ python inference.py --config configs/gpt2_train.yml \
 
 python inference.py --config configs/gpt2_train.yml \
                     --input-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-prompts/something.txt \
-                    --output-path ./output/ \
+                    --output-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/ \
                     --output-file something.gp5 \
                     --encdec-path ./dadaGP/ \
                     --n-warm-up 128 \
