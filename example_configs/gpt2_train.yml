@@ -2,17 +2,21 @@ INPUT: /mnt/e/Data/DadaGP-processed-classic_rock
 OUTPUT: ./output/
 MODEL: gpt2
 RESUME_FROM_CKPT: False
-CKPT_PATH:
+USE_PEFT: False
 DATA:
   EXTEND_TOKENIZER: False
   TRAIN_DATASET: train_dataset
   TEST_DATASET: test_dataset
 SOLVER:
   LR: 2e-5
-  TRAIN_BATCH_SIZE: 32
-  TEST_BATCH_SIZE: 32
+  TRAIN_BATCH_SIZE: 16
+  TEST_BATCH_SIZE: 16
   GRAD_ACC_STEPS: 2
   GRAD_CKPT: True
   FP16: True
   EPOCHS: 1
   WEIGHT_DECAY: 1e-2
+PEFT:
+  LORA_ALPHA: 32
+  LORA_DROPOUT: 0.1
+  DIM_R: 8

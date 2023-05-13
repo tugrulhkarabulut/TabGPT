@@ -16,6 +16,7 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+from peft import LoraConfig, TaskType, get_peft_model
 
 import utils
 from config import get_cfg_defaults
@@ -165,6 +166,16 @@ def main():
         tokenizer = utils.get_tokenizer()
 
     model = GPT2LMHeadModel.from_pretrained(cfg.MODEL, use_cache=False)
+    if cfg.USE_PEFT:
+        peft_config = LoraConfig(
+            task_type=TaskType.CAUSAL_LM,
+            inference_mode=False,
+            r=cfg.PEFT.DIM_R,
+            lora_alpha=cfg.PEFT.LORA_ALPHA,
+            lora_dropout=cfg.PEFT.LORA_DROPOUT,
+        )
+        model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
 
     training_args = TrainingArguments(
         output_dir=cfg.OUTPUT,
