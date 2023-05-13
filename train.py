@@ -179,7 +179,6 @@ def main():
         evaluation_strategy="epoch",
         save_total_limit=2,
         save_strategy="epoch",
-        use_cache=not cfg.SOLVER.GRAD_CKPT,
     )
     trainer = Trainer(
         model=model,
