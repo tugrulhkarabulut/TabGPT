@@ -161,11 +161,10 @@ def main():
 
     if cfg.DATA.EXTEND_TOKENIZER:
         tokenizer = utils.get_tokenizer(extend=all_tokens)
-        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
-
     else:
         tokenizer = utils.get_tokenizer()
-        model = GPT2LMHeadModel.from_pretrained(cfg.MODEL)
+
+    model = GPT2LMHeadModel.from_pretrained(cfg.MODEL, use_cache=False)
 
     training_args = TrainingArguments(
         output_dir=cfg.OUTPUT,
@@ -179,8 +178,8 @@ def main():
         fp16=cfg.SOLVER.FP16,
         evaluation_strategy="epoch",
         save_total_limit=2,
-        save_strategy="no",
-        load_best_model_at_end=False,
+        save_strategy="epoch",
+        use_cache=not cfg.SOLVER.GRAD_CKPT,
     )
     trainer = Trainer(
         model=model,
