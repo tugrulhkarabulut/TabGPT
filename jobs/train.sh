@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -p akya-cuda
+#SBATCH -p palamut-cuda
 #SBATCH --time=1-00:00:00
 #SBATCH -A tbag130
 #SBATCH -J tabgpt-train
