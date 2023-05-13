@@ -174,6 +174,7 @@ def main():
             lora_alpha=cfg.PEFT.LORA_ALPHA,
             lora_dropout=cfg.PEFT.LORA_DROPOUT,
         )
+        model.enable_input_require_grads()
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
 
