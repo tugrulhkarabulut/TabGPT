@@ -10,7 +10,6 @@ from datasets import Dataset, load_dataset
 from tqdm import tqdm
 from transformers import (
     AutoModelForCausalLM,
-    DataCollatorForLanguageModeling,
     GPT2LMHeadModel,
     GPT2TokenizerFast,
     Trainer,
@@ -165,7 +164,7 @@ def main():
     else:
         tokenizer = utils.get_tokenizer()
 
-    model = GPT2LMHeadModel.from_pretrained(cfg.MODEL, use_cache=False)
+    model = AutoModelForCausalLM.from_pretrained(cfg.MODEL, use_cache=False)
     if cfg.USE_PEFT:
         peft_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
