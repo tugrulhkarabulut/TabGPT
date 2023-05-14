@@ -4,21 +4,37 @@ import json
 import os
 from math import ceil
 
-import numpy as np
 import pandas as pd
 from datasets import Dataset, load_dataset
 from tqdm import tqdm
 from transformers import (
     AutoModelForCausalLM,
-    GPT2LMHeadModel,
-    GPT2TokenizerFast,
     Trainer,
     TrainingArguments,
+    TrainerCallback,
 )
 from peft import LoraConfig, TaskType, get_peft_model
 
 import utils
 from config import get_cfg_defaults
+
+class SavePeftModelCallback(TrainerCallback):
+    def on_save(
+        self,
+        args,
+        state,
+        control,
+        **kwargs,
+    ):
+        checkpoint_folder = os.path.join(args.output_dir, f"checkpoint-{state.global_step}")
+
+        peft_model_path = os.path.join(checkpoint_folder, "adapter_model")
+        kwargs["model"].save_pretrained(peft_model_path)
+
+        pytorch_model_path = os.path.join(checkpoint_folder, "pytorch_model.bin")
+        if os.path.exists(pytorch_model_path):
+            os.remove(pytorch_model_path)
+        return control
 
 
 def get_files(path):
@@ -139,6 +155,7 @@ def write_config(cfg, cfg_path):
     with open(os.path.join(cfg.OUTPUT, cfg_path), "w") as f:
         f.write(cfg.dump())
 
+
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -199,6 +216,7 @@ def main():
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
+        callbacks=[SavePeftModelCallback],
     )
 
     if cfg.RESUME_FROM_CKPT:

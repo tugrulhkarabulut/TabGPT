@@ -135,9 +135,9 @@ def main():
 
 
     if cfg.USE_PEFT:
-        config = PeftConfig.from_pretrained(cfg.CKPT_PATH)
-        model = AutoModelForCausalLM.from_pretrained(cfg.MODEL)
-        model = PeftModel(model, config)
+        config = PeftConfig.from_pretrained(os.path.join(cfg.CKPT_PATH, "adapter_model"))
+        model = AutoModelForCausalLM.from_pretrained(config.base_model_name_or_path)
+        model = PeftModel.from_pretrained(model, os.path.join(cfg.CKPT_PATH, "adapter_model"))
     else:
         model = GPT2LMHeadModel.from_pretrained(cfg.CKPT_PATH)
 
