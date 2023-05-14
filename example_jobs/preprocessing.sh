@@ -9,7 +9,6 @@
 #SBATCH -o /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-%j.out
 #SBATCH -e /truba/home/tkarabulut/htgaa_project/TabGPT/logs/err-%j.err
 
-conda activate htgaa
 python preprocessing.py --input-path ../DadaGP-v1.1 \
                         --output-path ../DadaGP-processed-classic_rock \
                         --genre classic_rock

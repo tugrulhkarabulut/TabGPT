@@ -17,6 +17,7 @@ from transformers import (
     TextGenerationPipeline,
     pipeline,
 )
+from peft import PeftModel, PeftConfig
 
 import utils
 from config import get_cfg_defaults
@@ -132,7 +133,14 @@ def main():
     else:
         tokenizer = utils.get_tokenizer()
 
-    model = GPT2LMHeadModel.from_pretrained(cfg.CKPT_PATH)
+
+    if cfg.USE_PEFT:
+        config = PeftConfig.from_pretrained(cfg.CKPT_PATH)
+        model = AutoModelForCausalLM.from_pretrained(cfg.MODEL)
+        model = PeftModel(model, config)
+    else:
+        model = GPT2LMHeadModel.from_pretrained(cfg.CKPT_PATH)
+
     tab_generator = pipeline(
         "text-generation",
         model=model,

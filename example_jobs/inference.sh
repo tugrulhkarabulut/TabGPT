@@ -10,7 +10,6 @@
 #SBATCH -o /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-inf-%j.out
 #SBATCH -e /truba/home/tkarabulut/htgaa_project/TabGPT/logs/err-inf-%j.err
 
-conda activate htgaa
 python inference.py --config configs/gpt2_train.yml \
                     --input-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-prompts/here_comes_the_sun.txt \
                     --output-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/ \

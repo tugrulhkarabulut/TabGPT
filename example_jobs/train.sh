@@ -10,5 +10,4 @@
 #SBATCH -o /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-train-%j.out
 #SBATCH -e /truba/home/tkarabulut/htgaa_project/TabGPT/logs/out-train-%j.err
 
-conda activate htgaa
 python train.py --config configs/gpt2_large_train.yml
