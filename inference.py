@@ -51,7 +51,7 @@ def get_bad_words(tokenizer, vocab, instruments=INSTRUMENTS):
     return bad_words_ids
 
 
-def postprocess(text, all_tokens, append_end=True, sep="/n"):
+def postprocess(text, all_tokens, append_end=True, sep="\n"):
     text = re.sub("new_measure", " new_measure ", text)
     text = text.strip()
     tokens = text.split()
@@ -89,7 +89,7 @@ def generate_gp(
     with open(txt_path, "w") as f:
         f.write(generated_text)
     subprocess.run(
-        [f"{sys.executable} {os.path.join(encdec_path, 'dadagp.py')} decode {txt_path} {gp_path}"]
+        [f"cd {encdec_path} && {sys.executable} dadagp.py decode {txt_path} {gp_path}"]
     )
 
 
