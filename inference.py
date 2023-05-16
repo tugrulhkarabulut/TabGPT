@@ -89,7 +89,7 @@ def generate_gp(
     with open(txt_path, "w") as f:
         f.write(generated_text)
     subprocess.run(
-        [f"cd {encdec_path} && {sys.executable} dadagp.py decode {txt_path} {gp_path}"]
+        [f"{sys.executable} {os.path.join(encdec_path, 'dadagp.py')} decode {txt_path} {gp_path}"]
     )
 
 
@@ -118,6 +118,7 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     cfg = get_cfg_defaults()
+    print(f"Device: {torch.device(0)}")
 
     if os.path.exists(args.config):
         cfg.merge_from_file(args.config)
