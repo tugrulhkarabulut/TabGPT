@@ -43,12 +43,11 @@ def is_in_instruments(note, instruments):
 
 
 def get_bad_words(tokenizer, vocab, instruments=INSTRUMENTS):
-    tok_vocab = tokenizer.vocab.keys()
-    bad_words = list(set(tok_vocab).difference(vocab))
+    if instruments == INSTRUMENTS:
+        return
     unwanted_instr = set(INSTRUMENTS).difference(instruments)
     bad_notes = [s for s in vocab if is_in_instruments(s, unwanted_instr)]
-    bad_words += bad_notes
-    bad_words_ids = tokenizer(bad_words, add_special_tokens=False).input_ids
+    bad_words_ids = tokenizer(bad_notes, add_special_tokens=False).input_ids
     return bad_words_ids
 
 
@@ -127,6 +126,7 @@ def main():
 
     input_piece = utils.read_tokens(args.input_path)
     warm_up = " ".join(input_piece.split()[: args.n_warm_up])
+    print(f"Prompt: {warm_up}")
 
     if cfg.DATA.EXTEND_TOKENIZER:
         tokenizer = utils.get_tokenizer(extend=all_tokens)
