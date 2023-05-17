@@ -19,6 +19,10 @@ python inference.py --config configs/gpt2_train.yml \
                     --max-length 1024 \
                     --overlap 128 \
                     --instruments clean0
+cd ./dadaGP/
+pyhon dadagp.py decode /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/input.txt \
+                       /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/here_comes_the_sun.gp5
+cd ..
 
 python inference.py --config configs/gpt2_train.yml \
                     --input-path /truba/home/tkarabulut/htgaa_project/DadaGP-example-prompts/something.txt \
@@ -29,5 +33,8 @@ python inference.py --config configs/gpt2_train.yml \
                     --max-length 1024 \
                     --overlap 128 \
                     --instruments clean0
-
+cd ./dadaGP/
+pyhon dadagp.py decode /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/input.txt \
+                       /truba/home/tkarabulut/htgaa_project/DadaGP-example-outputs/something.gp5
+cd ..
 

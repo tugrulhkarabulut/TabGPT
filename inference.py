@@ -80,18 +80,11 @@ def generate_piece(generator, warm_up_tabs, max_length, overlap, all_tokens):
 
 def generate_gp(
     generated_text,
-    encdec_path="./dadaGP/",
     output_path=".output/",
-    output_file="output.gp5",
 ):
     txt_path = os.path.join(output_path, "input.txt")
-    gp_path = os.path.join(output_path, output_file)
     with open(txt_path, "w") as f:
         f.write(generated_text)
-    subprocess.run(
-        [f"cd {encdec_path} && {sys.executable} dadagp.py decode {txt_path} {gp_path}"]
-    )
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -106,8 +99,6 @@ def parse_arguments():
         default="/mnt/e/Data/DadaGP-v1.1/B/Beatles (The)/Beatles (The) - Here Comes The Sun (3).gp4.tokens.txt",
     )
     parser.add_argument("--output-path", type=str, default="./output/")
-    parser.add_argument("--output-file", type=str, default="output.gp5")
-    parser.add_argument("--encdec-path", type=str, default="./dadaGP/")
     parser.add_argument("--n-warm-up", type=int, default=128)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--overlap", type=int, default=128)
@@ -163,7 +154,7 @@ def main():
         all_tokens=all_tokens,
     )
 
-    generate_gp(generated_text, args.encdec_path, args.output_path, args.output_file)
+    generate_gp(generated_text, args.output_path)
 
 
 if __name__ == "__main__":
