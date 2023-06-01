@@ -9,6 +9,7 @@ from datasets import Dataset, load_dataset
 from tqdm import tqdm
 from transformers import (
     AutoModelForCausalLM,
+    AutoConfig,
     Trainer,
     TrainingArguments,
     TrainerCallback,
@@ -18,6 +19,7 @@ from peft import LoraConfig, TaskType, get_peft_model
 import utils
 from config import get_cfg_defaults
 
+
 class SavePeftModelCallback(TrainerCallback):
     def on_save(
         self,
@@ -26,7 +28,9 @@ class SavePeftModelCallback(TrainerCallback):
         control,
         **kwargs,
     ):
-        checkpoint_folder = os.path.join(args.output_dir, f"checkpoint-{state.global_step}")
+        checkpoint_folder = os.path.join(
+            args.output_dir, f"checkpoint-{state.global_step}"
+        )
 
         peft_model_path = os.path.join(checkpoint_folder, "adapter_model")
         kwargs["model"].save_pretrained(peft_model_path)
@@ -151,6 +155,7 @@ def tokenize_function(tokenizer, examples):
     examples["labels"] = examples["input_ids"].copy()
     return examples
 
+
 def write_config(cfg, cfg_path):
     with open(os.path.join(cfg.OUTPUT, cfg_path), "w") as f:
         f.write(cfg.dump())
@@ -184,7 +189,16 @@ def main():
     else:
         tokenizer = utils.get_tokenizer()
 
-    model = AutoModelForCausalLM.from_pretrained(cfg.MODEL, use_cache=False)
+    if cfg.TRAIN_FROM_SCRATCH:
+        config = AutoConfig.from_pretrained(
+            cfg.MODEL,
+            vocab_size=len(tokenizer),
+            bos_token_id=tokenizer.bos_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+        model = AutoModelForCausalLM.from_config(config)
+    else:
+        model = AutoModelForCausalLM.from_pretrained(cfg.MODEL, use_cache=False)
     if cfg.USE_PEFT:
         peft_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
@@ -225,7 +239,8 @@ def main():
         ckpt_path = False
 
     trainer.train(resume_from_checkpoint=ckpt_path)
-    write_config(cfg, args.config.split('/')[-1])
+    write_config(cfg, args.config.split("/")[-1])
+
 
 if __name__ == "__main__":
     main()

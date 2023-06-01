@@ -8,6 +8,7 @@ _C.MODEL = "gpt2"
 _C.RESUME_FROM_CKPT = False
 _C.CKPT_PATH = ""
 _C.USE_PEFT = False
+_C.TRAIN_FROM_SCRATCH = False
 
 _C.DATA = CN()
 _C.DATA.TRAIN_DATASET = "train_dataset"

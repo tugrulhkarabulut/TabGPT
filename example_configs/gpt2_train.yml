@@ -3,6 +3,7 @@ OUTPUT: ./output/
 MODEL: gpt2
 RESUME_FROM_CKPT: False
 USE_PEFT: True
+TRAIN_FROM_SCRATCH: False
 DATA:
   EXTEND_TOKENIZER: False
   TRAIN_DATASET: /mnt/e/Data/DadaGP-processed-classic_rock/train_dataset
