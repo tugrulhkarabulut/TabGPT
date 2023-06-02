@@ -23,13 +23,23 @@ def get_metadata(path):
 
 
 def filter(data, value, by="genre", col="genre_tokens"):
-    return {k: v for k, v in data.items() if f"{by}:{value}" in v[col]}
+    def is_in(x):
+        options = [f"{by}:{val}" for val in value]
+        for o in options:
+            if o in x:
+                return True
+        return False
+
+    return {k: v for k, v in data.items() if is_in(v[col])}
 
 
 def add_tokens(data, path):
     data_new = data.copy()
     for key in tqdm(data):
-        data_new[key]["text"] = utils.read_tokens(os.path.join(path, key))
+        try:
+            data_new[key]["text"] = utils.read_tokens(os.path.join(path, data[key]["tokens.txt"]))
+        except:
+            del data_new[key]
     return data_new
 
 
@@ -123,7 +133,7 @@ def parse_arguments():
     parser.add_argument(
         "--output-path", type=str, default="/mnt/e/Data/DadaGP-processed"
     )
-    parser.add_argument("--genre", type=str, default="classic_rock")
+    parser.add_argument("--genre", nargs='+', default=["all"])
     parser.add_argument("--extend-tokenizer", action="store_true")
     return parser.parse_args()
 
@@ -131,8 +141,10 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     df_metadata = get_metadata(args.input_path)
-    if args.genre is not None:
+    print(args.genre)
+    if "all" not in args.genre:
         df_metadata = filter(df_metadata, args.genre)
+        print(f"Filtered: {len(df_metadata)}")
     df_metadata = add_tokens(df_metadata, args.input_path)
     train_data, val_data = prepare_train_val(df_metadata)
     all_tokens = json.load(
@@ -152,27 +164,27 @@ def main():
     train_dataset = train_dataset.map(
         chunk_map,
         batched=True,
-        num_proc=4,
+        batch_size=64,
         remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
     )
     train_dataset = train_dataset.map(
         lambda x: tokenize_function(tokenizer, x),
         batched=True,
-        num_proc=4,
+        batch_size=64,
         remove_columns=["text"],
     )
-    train_dataset = train_dataset.map(group_texts, batched=True, num_proc=4)
+    train_dataset = train_dataset.map(group_texts, batched=True, batch_size=64)
 
     test_dataset = test_dataset.map(
         chunk_map,
         batched=True,
-        num_proc=4,
+        batch_size=64,
         remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
     )
     test_dataset = test_dataset.map(
         lambda x: tokenize_function(tokenizer, x),
         batched=True,
-        num_proc=4,
+        batch_size=64,
         remove_columns=["text"],
     )
     test_dataset = test_dataset.map(group_texts, batched=True, num_proc=4)

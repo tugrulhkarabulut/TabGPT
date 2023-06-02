@@ -9,11 +9,8 @@ def get_tokenizer(extend=None):
 
 
 def read_tokens(path):
-    try:
-        with open(path) as f:
-            text = "".join(f.readlines())
-            text = text.replace("\n", " ")
-    except:
-        print(path)
+    with open(path) as f:
+        text = "".join(f.readlines())
+        text = text.replace("\n", " ")
 
     return text
