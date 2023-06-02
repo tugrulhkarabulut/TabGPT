@@ -199,6 +199,10 @@ def main():
         model = AutoModelForCausalLM.from_config(config)
     else:
         model = AutoModelForCausalLM.from_pretrained(cfg.MODEL, use_cache=False)
+    
+
+    train_callbacks = []
+
     if cfg.USE_PEFT:
         peft_config = LoraConfig(
             task_type=TaskType.CAUSAL_LM,
@@ -210,6 +214,7 @@ def main():
         model.enable_input_require_grads()
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
+        train_callbacks.append(SavePeftModelCallback)
 
     training_args = TrainingArguments(
         output_dir=cfg.OUTPUT,
@@ -230,7 +235,7 @@ def main():
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
-        callbacks=[SavePeftModelCallback],
+        callbacks=train_callbacks,
     )
 
     if cfg.RESUME_FROM_CKPT:
