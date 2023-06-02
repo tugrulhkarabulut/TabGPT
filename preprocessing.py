@@ -135,6 +135,7 @@ def parse_arguments():
     )
     parser.add_argument("--genre", nargs='+', default=["all"])
     parser.add_argument("--extend-tokenizer", action="store_true")
+    parser.add_argument("--raw", action="store_true")
     return parser.parse_args()
 
 
@@ -156,38 +157,43 @@ def main():
     json.dump(val_data, open(os.path.join(args.output_path, "val_data.json"), "w"))
 
     train_dataset, test_dataset = prepare_dataset(args.output_path)
-    if args.extend_tokenizer:
-        tokenizer = utils.get_tokenizer(extend=all_tokens)
-    else:
-        tokenizer = utils.get_tokenizer()
 
-    train_dataset = train_dataset.map(
-        chunk_map,
-        batched=True,
-        batch_size=64,
-        remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
-    )
-    train_dataset = train_dataset.map(
-        lambda x: tokenize_function(tokenizer, x),
-        batched=True,
-        batch_size=64,
-        remove_columns=["text"],
-    )
-    train_dataset = train_dataset.map(group_texts, batched=True, batch_size=64)
 
-    test_dataset = test_dataset.map(
-        chunk_map,
-        batched=True,
-        batch_size=64,
-        remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
-    )
-    test_dataset = test_dataset.map(
-        lambda x: tokenize_function(tokenizer, x),
-        batched=True,
-        batch_size=64,
-        remove_columns=["text"],
-    )
-    test_dataset = test_dataset.map(group_texts, batched=True, num_proc=4)
+    if not args.raw: 
+        if args.extend_tokenizer:
+            tokenizer = utils.get_tokenizer(extend=all_tokens)
+        else:
+            tokenizer = utils.get_tokenizer()
+
+        
+
+        train_dataset = train_dataset.map(
+            chunk_map,
+            batched=True,
+            batch_size=128,
+            remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
+        )
+        train_dataset = train_dataset.map(
+            lambda x: tokenize_function(tokenizer, x),
+            batched=True,
+            batch_size=128,
+            remove_columns=["text"],
+        )
+        train_dataset = train_dataset.map(group_texts, batched=True, batch_size=128)
+
+        test_dataset = test_dataset.map(
+            chunk_map,
+            batched=True,
+            batch_size=128,
+            remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
+        )
+        test_dataset = test_dataset.map(
+            lambda x: tokenize_function(tokenizer, x),
+            batched=True,
+            batch_size=128,
+            remove_columns=["text"],
+        )
+        test_dataset = test_dataset.map(group_texts, batched=True, batch_size=128)
 
     train_dataset.save_to_disk(os.path.join(args.output_path, "train_dataset"))
     test_dataset.save_to_disk(os.path.join(args.output_path, "test_dataset"))
