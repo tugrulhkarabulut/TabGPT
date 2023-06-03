@@ -159,20 +159,29 @@ def main():
     train_dataset, test_dataset = prepare_dataset(args.output_path)
 
 
+    remove_columns = ["validation_set", "tokens.txt", "artist_token"]
+    if not args.raw:
+        remove_columns.append("genre_tokens")
+
+    train_dataset = train_dataset.map(
+        chunk_map,
+        batched=True,
+        batch_size=128,
+        remove_columns=remove_columns,
+    )
+    test_dataset = test_dataset.map(
+        chunk_map,
+        batched=True,
+        batch_size=128,
+        remove_columns=remove_columns,
+    )
+
     if not args.raw: 
         if args.extend_tokenizer:
             tokenizer = utils.get_tokenizer(extend=all_tokens)
         else:
             tokenizer = utils.get_tokenizer()
-
         
-
-        train_dataset = train_dataset.map(
-            chunk_map,
-            batched=True,
-            batch_size=128,
-            remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
-        )
         train_dataset = train_dataset.map(
             lambda x: tokenize_function(tokenizer, x),
             batched=True,
@@ -181,12 +190,7 @@ def main():
         )
         train_dataset = train_dataset.map(group_texts, batched=True, batch_size=128)
 
-        test_dataset = test_dataset.map(
-            chunk_map,
-            batched=True,
-            batch_size=128,
-            remove_columns=["validation_set", "tokens.txt", "artist_token", "genre_tokens"],
-        )
+        
         test_dataset = test_dataset.map(
             lambda x: tokenize_function(tokenizer, x),
             batched=True,
