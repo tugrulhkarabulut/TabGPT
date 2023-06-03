@@ -94,9 +94,13 @@ def chunk_text(text, max_chunk_size=1000, split_by="new_measure"):
 
 def chunk_map(examples):
     chunked_texts = []
-    for text in examples["text"]:
-        chunked_texts += chunk_text(text)
+    genres = []
+    for text, genre_tokens in zip(examples["text"], examples["genre_tokens"]):
+        chunks = chunk_text(text)
+        chunked_texts += chunks
+        genres += [genre_tokens] * len(chunks)
     examples["text"] = chunked_texts
+    examples["genre_tokens"] = genres
     return examples
 
 
