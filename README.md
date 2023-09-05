@@ -26,7 +26,7 @@ Prepare a config file in yaml format just like in the example_configs folder. Cl
 
 ### Inference
 
-Prepare an input txt file that contains initial tokens. Or copy the initial tokens of your favorite song from the dataset. The rest is running the following commands:
+Prepare an input txt file that contains initial tokens. Or use initial tokens of your favorite song from the dataset. The rest is running the following commands:
 
 ```bash
     python inference.py --config configs/gpt2_train.yml \
